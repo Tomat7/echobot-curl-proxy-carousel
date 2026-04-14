@@ -1,5 +1,5 @@
 // Example of using array of proxies wth tgbot-cpp library.
-// Base on original code (c) Oleg Morozenkov [reo7sp] https://github.com/reo7sp
+// Based on original code (c) Oleg Morozenkov [reo7sp] https://github.com/reo7sp
 // https://github.com/reo7sp/tgbot-cpp/blob/master/samples/echobot-curl-client/src/main.cpp
 
 #include <csignal>
@@ -23,24 +23,21 @@ using namespace TgBot;
 
 int main() {
   // Filling array of proxies.
-  vector<const char *> proxies;
+  vector<const char*> proxies;
   // NULL = no proxy, direct connection to API.
   proxies.push_back(NULL);  // [0]
-  // All proxy-URLs below are fake.
+  // All proxy-URLs below are fake. Use yuor own.
   proxies.push_back("socks5://user:password@10.20.30.40:1080");  // [1]
-  proxies.push_back("http://user:password@192.168.50.70:3128");    // [2]
-  proxies.push_back("http://user:password@192.168.80.90:3128");    // [3]
-  // Choose "staring" index of proxy. In this example - NULL = no proxy.
+  proxies.push_back("http://user:password@192.168.50.70:3128");  // [2]
+  proxies.push_back("http://user:password@192.168.80.90:3128");  // [3]
+  // Choose "staring" index of proxy. In this example [0] - NULL=no proxy.
   size_t proxy_now = 0;
 
   string token(getenv("TOKEN"));
   printf("Token: %s\n", token.c_str());
 
   CurlHttpClient curlHttpClient;
-  printf("Token1: %s\n", token.c_str());
-
   Bot bot(token, curlHttpClient);
-  printf("Token2: %s\n", token.c_str());
 
   bot.getEvents().onCommand("start", [&bot](Message::Ptr message) {
     bot.getApi().sendMessage(message->chat->id, "Hi!");
@@ -51,13 +48,11 @@ int main() {
     bot.getApi().sendMessage(message->chat->id,
                              "Your message is: " + message->text);
   });
-  printf("Token3: %s\n", token.c_str());
 
   signal(SIGINT, [](int s) {
     printf("SIGINT got: %i\n", s);
     exit(0);
   });
-  printf("Token4: %s\n", token.c_str());
 
   while (true) {
     try {
@@ -72,8 +67,8 @@ int main() {
     } catch (exception &e) {
       printf("Proxy[%li]: %s error\n", proxy_now, proxies[proxy_now]);
       printf("%s\n", e.what());
-      // Assumption!
-      // The reason of exception was: disconnect,
+      // Assumption:
+      // the reason of exception was - disconnect,
       // connection timeout or other network problem.
       // Trying to switch (cycle) to next proxy in array.
       proxy_now++;
