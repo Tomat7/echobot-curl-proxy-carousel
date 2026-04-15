@@ -1,4 +1,4 @@
-// Example of using array of proxies wth tgbot-cpp library.
+// Example of using array of proxies with tgbot-cpp library.
 // Based on original code (c) Oleg Morozenkov [reo7sp] https://github.com/reo7sp
 // https://github.com/reo7sp/tgbot-cpp/blob/master/samples/echobot-curl-client/src/main.cpp
 
@@ -26,7 +26,7 @@ int main() {
   vector<const char*> proxies;
   // NULL = no proxy, direct connection to API.
   proxies.push_back(NULL);  // [0]
-  // All proxy-URLs below are fake. Use yuor own.
+  // All proxy-URLs below are fake. Use your own.
   proxies.push_back("socks5://user:password@10.20.30.40:1080");  // [1]
   proxies.push_back("http://user:password@192.168.50.70:3128");  // [2]
   proxies.push_back("http://user:password@192.168.80.90:3128");  // [3]
@@ -36,8 +36,9 @@ int main() {
   string token(getenv("TOKEN"));
   printf("Token: %s\n", token.c_str());
 
-  CurlHttpClient curlHttpClient;
+  CurlHttpClient curlHttpClient;  
   Bot bot(token, curlHttpClient);
+  // No call setProxy() = no proxy
 
   bot.getEvents().onCommand("start", [&bot](Message::Ptr message) {
     bot.getApi().sendMessage(message->chat->id, "Hi!");
@@ -67,14 +68,13 @@ int main() {
     } catch (exception &e) {
       printf("Proxy[%li]: %s error\n", proxy_now, proxies[proxy_now]);
       printf("%s\n", e.what());
-      // Assumption:
-      // the reason of exception was - disconnect,
+      // Assumption: the reason of exception was - disconnect,
       // connection timeout or other network problem.
       // Trying to switch (cycle) to next proxy in array.
       proxy_now++;
       if (proxy_now >= proxies.size()) proxy_now = 0;
       curlHttpClient.setProxy(proxies[proxy_now], CONNECT_TIMEOUT);
-      printf("Switch proxy[%li]: %s\n", proxy_now, proxies[proxy_now]);
+      printf("Switch to proxy[%li]: %s\n", proxy_now, proxies[proxy_now]);
     }
   }
   return 0;
